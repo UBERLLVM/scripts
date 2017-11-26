@@ -26,15 +26,8 @@ bldblu=${txtbld}$(tput setaf 4) # blue
 bldcya=${txtbld}$(tput setaf 6) # cyan
 txtrst=$(tput sgr0) # Reset
 
-# Find Host OS and set OS specific variables
-IS_DARWIN=$(uname -a | grep Darwin)
-if [ -n "$IS_DARWIN" ]; then
-  CPUS=$(sysctl hw.ncpu | awk '{print $2}')
-  DATE=gdate
-else
-  CPUS=$(grep "^processor" /proc/cpuinfo | wc -l)
-  DATE=date
-fi;
+CPUS=$(grep "^processor" /proc/cpuinfo | wc -l)
+DATE=date
 
 # Optimize CPU Threads
 JOBS=$(bc <<< "$CPUS+2");
@@ -42,32 +35,34 @@ JOBS=$(bc <<< "$CPUS+2");
 # Set Prefix Path
 PREFIX_PATH=$TOOLCHAIN_ROOT/out/$UBERCLANG_VERSION
 
+alias popd="popd > /dev/null"
+alias pushd="pushd > /dev/null"
+
 # Function to clean tree
 clean() {
-if [ -d $TOOLCHAIN_ROOT/cmake ];
-then
+  if [ -d $TOOLCHAIN_ROOT/cmake ];
+  then
     rm -rf $TOOLCHAIN_ROOT/cmake;
-fi;
-if [ -d "$PREFIX_PATH" ];
-then
-    rm -rf $PREFIX_PATH;
+  fi;
+
+  if [ -d "$PREFIX_PATH" ];
+  then
+    rm -rf $TOOLCHAIN_ROOT/out;
     mkdir -p $PREFIX_PATH;
     echo "Emptied the out directory";
-else
+  else
     mkdir -p $PREFIX_PATH;
-fi;
+  fi;
 
-cd $TOOLCHAIN_ROOT;
-
-cd llvm && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-cd llvm/tools/clang && rm -rf * && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-cd llvm/tools/polly && rm -rf * && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-cd llvm/projects/compiler-rt && rm -rf * && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-cd llvm/projects/libcxx && rm -rf * && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-cd llvm/projects/libcxxabi && rm -rf * && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-cd llvm/projects/libunwind && rm -rf * && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-cd llvm/projects/openmp && rm -rf * && git reset --hard && git fetch ul $UBERCLANG_VERSION && git checkout FETCH_HEAD && cd $TOOLCHAIN_ROOT;
-
+  cd $TOOLCHAIN_ROOT;
+  pushd llvm && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd ;
+  pushd llvm/tools/clang && rm -rf * && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd;
+  pushd llvm/tools/polly && rm -rf * && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd;
+  pushd llvm/projects/compiler-rt && rm -rf * && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd;
+  pushd llvm/projects/libcxx && rm -rf * && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd;
+  pushd llvm/projects/libcxxabi && rm -rf * && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd;
+  pushd llvm/projects/libunwind && rm -rf * && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd;
+  pushd llvm/projects/openmp && rm -rf * && git fetch ll $UBERCLANG_VERSION && git reset --hard FETCH_HEAD && popd;
 }
 
 # Function to build LLVM

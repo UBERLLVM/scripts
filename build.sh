@@ -16,9 +16,9 @@
 export TOOLCHAIN_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 
 # Check if the desired version is valid
-if [[ "$1" =~ ^[0-9]+(\.[0-9]+)?$ ]] ; then
+# if [[ "$1" =~ ^[0-9]+(\.[0-9]+)?$ ]] ; then
     export UBERCLANG_VERSION=$1
-fi;
+# fi;
 
 if [ "$1" == "master" ]; then
     export UBERCLANG_VERSION="master"
